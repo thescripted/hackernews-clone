@@ -20,6 +20,10 @@ const Header = ({ history }) => {
             </Link>
           </div>
         )}
+        <div className="ml1">|</div>
+        <Link to="/search" className="ml1 no-underline black">
+          search
+        </Link>
       </div>
       <div className="flex flex-fixed">
         {authToken ? (
