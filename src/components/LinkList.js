@@ -23,6 +23,7 @@ export const FEED_QUERY = gql`
           }
         }
       }
+      count
     }
   }
 `;
@@ -77,10 +78,19 @@ const NEW_VOTES_SUBSCRIPTION = gql`
 
 const LinkList = (props) => {
   const _updateCacheAfterVote = (store, createVote, linkId) => {
-    const data = store.readQuery({ query: FEED_QUERY });
+    const isNewPage = props.location.pathname.includes("new");
+    const page = parseInt(props.match.params.page, 10);
+    const skip = isNewPage ? (page - 1) * LINKS_PER_PAGE : 0;
+    const first = isNewPage ? LINKS_PER_PAGE : 100;
+    const orderBy = isNewPage ? "createdAT_DESC" : null;
+
+    const data = store.readQuery({
+      query: FEED_QUERY,
+      variables: { first, skip, orderBy },
+    });
+
     const votedLink = data.feeds.link.find((link) => link.id === linkId);
     votedLink.votes = createVote.link.votes;
-
     store.writeQuery({ query: FEED_QUERY, data });
   };
 

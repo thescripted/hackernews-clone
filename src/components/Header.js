@@ -13,7 +13,6 @@ const Header = ({ history }) => {
           new
         </Link>
         <div className="ml1">|</div>
-
         <Link to="/top" className="ml1 no-underline black">
           top
         </Link>
