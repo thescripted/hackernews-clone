@@ -12,14 +12,14 @@ const SIGNUP_MUTATION = gql`
 `;
 
 const LOGIN_MUTATION = gql`
-  mutation LoginMutation($email: String! $password: String!) {
-    login(email: $email, password; $password) {
-        token
+  mutation LoginMutation($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      token
     }
   }
 `;
 
-const Login = () => {
+const Login = ({ history }) => {
   const [user, setUser] = useState({
     login: true,
     email: "",
@@ -27,14 +27,14 @@ const Login = () => {
     name: "",
   });
 
-  const _confirm = () => {
-    //ToDo
-    return;
+  const _confirm = async (data) => {
+    const { token } = user.login ? data.login : data.signup;
+    _saveUserData(token);
+    history.push("/");
   };
 
-  const _saveUserData = () => {
-    //ToDo
-    return;
+  const _saveUserData = (token) => {
+    localStorage.setItem(AUTH_TOKEN, token);
   };
 
   const { login, email, password, name } = user;
@@ -45,20 +45,20 @@ const Login = () => {
         {!login && (
           <input
             value={name}
-            onChange={(e) => this.setUser({ ...user, name: e.target.value })}
+            onChange={(e) => setUser({ ...user, name: e.target.value })}
             type="text"
             placeholder="Your name"
           />
         )}
         <input
           value={email}
-          onChange={(e) => this.setUser({ ...user, email: e.target.value })}
+          onChange={(e) => setUser({ ...user, email: e.target.value })}
           type="text"
           placeholder="Your email address"
         />
         <input
           value={password}
-          onChange={(e) => this.setUser({ ...user, password: e.target.value })}
+          onChange={(e) => setUser({ ...user, password: e.target.value })}
           type="password"
           placeholder="Choose a safe password"
         />
@@ -67,7 +67,7 @@ const Login = () => {
         <Mutation
           mutation={login ? LOGIN_MUTATION : SIGNUP_MUTATION}
           variables={{ email, password, name }}
-          onCompleted={(data) => this._confirm(data)}
+          onCompleted={(data) => _confirm(data)}
         >
           {(mutation) => (
             <div className="pointer m2 button" onClick={mutation}>
@@ -75,12 +75,9 @@ const Login = () => {
             </div>
           )}
         </Mutation>
-        <div className="pointer mr2 button" onClick={() => _confirm()}>
-          {login ? "login" : "create account"}
-        </div>
         <div
           className="pointer button"
-          onlick={() => setUser({ ...user, login: !login })}
+          onClick={() => setUser({ ...user, login: !login })}
         >
           {login ? "need to create an account?" : "already have an account?"}
         </div>
